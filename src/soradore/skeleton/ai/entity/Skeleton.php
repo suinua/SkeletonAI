@@ -77,8 +77,8 @@ class Skeleton extends Monster {
                 $this->coolTime = 23;
             }
             return $hasUpdate;
-        } else if ($this->distance($target) >= 5) {//10ブロックより遠ければ
-            $preTarget = $this->findClosestPlayer(10);//30ブロック以内の一番近いプレイヤーを取得
+        } else if ($this->distance($target) >= 5) {//5ブロックより遠ければ
+            $preTarget = $this->findClosestPlayer(10);//10ブロック以内の一番近いプレイヤーを取得
             if ($preTarget === null) {//プレイヤーが近くにいなければ
                 $this->target = null;//ターゲットを空にして、処理をやめる。
                 return $hasUpdate;
@@ -155,6 +155,4 @@ class Skeleton extends Monster {
     public function getXpDropAmount() : int{
 	    return 0;
     }
-
-
 }
