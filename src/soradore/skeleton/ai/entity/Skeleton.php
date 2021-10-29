@@ -22,7 +22,20 @@ class Skeleton extends Monster {
     public $height = 1.9;
     
     public function getName() : string{
-	return "Skeleton";
+	    return "Skeleton";
+    }
+
+    public function findClosestPlayer(int $distance) : ?Player {
+        $result = null;
+        foreach ($this->getLevel()->getPlayers() as $player) {
+            //[$playerとこのエンティティの距離 < 前の$playerの距離]なら、$resultに$playerを代入
+            if ($player->distance($this) < $distance) {
+                $result = $player;//結果に代入
+                $distance = $player->distance($this);//距離を更新
+            }
+        }
+
+        return $result;
     }
 
     public function entityBaseTick(int $tickDiff = 1): bool
@@ -41,8 +54,14 @@ class Skeleton extends Monster {
         else
             $this->attackTime = 0;
         
-        if($this->getTarget() == NULL)
-            return $hasUpdate;
+        if($this->getTarget() == null) {
+            $preTarget = $this->findClosestPlayer(10);
+            if ($preTarget === null) {
+                return $hasUpdate;//プレイヤーが近くにいなければ処理を終了
+            } else {
+                $this->target = $preTarget;
+            }
+        }
 
         $target = $this->getTarget();
         if(!($target instanceof Player))
@@ -58,6 +77,14 @@ class Skeleton extends Monster {
                 $this->coolTime = 23;
             }
             return $hasUpdate;
+        } else if ($this->distance($target) >= 5) {//10ブロックより遠ければ
+            $preTarget = $this->findClosestPlayer(10);//30ブロック以内の一番近いプレイヤーを取得
+            if ($preTarget === null) {//プレイヤーが近くにいなければ
+                $this->target = null;//ターゲットを空にして、処理をやめる。
+                return $hasUpdate;
+            } else {//プレイヤーが存在すれば
+                $this->target = $preTarget;//ターゲットを設定
+            }
         }
             
 
@@ -126,7 +153,8 @@ class Skeleton extends Monster {
     }
 
     public function getXpDropAmount() : int{
-	return 0;
+	    return 0;
     }
+
 
 }
