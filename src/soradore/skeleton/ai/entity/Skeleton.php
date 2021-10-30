@@ -15,6 +15,8 @@ class Skeleton extends Monster {
     public const NETWORK_ID = self::SKELETON;
 
     private $target = null;
+    private $isNeutral = true;
+
     private $speed = 0.28;
     private $coolTime = 0;
 
@@ -55,10 +57,14 @@ class Skeleton extends Monster {
             $this->attackTime = 0;
         
         if($this->getTarget() == null) {
+            if ($this->isNeutral) return $hasUpdate;//中立の状態なら処理を終了
+
             $preTarget = $this->findClosestPlayer(10);
             if ($preTarget === null) {
+                $this->isNeutral = true;//中立状態に設定
                 return $hasUpdate;//プレイヤーが近くにいなければ処理を終了
             } else {
+                $this->isNeutral = false;//中立状態を解除
                 $this->target = $preTarget;
             }
         }
@@ -132,6 +138,7 @@ class Skeleton extends Monster {
 
     public function setTarget(Player $player)
     {
+        $this->isNeutral = false;
         $this->target = $player;
     }
 
